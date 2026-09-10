@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Digital Shop Configurator</title>
+<meta name="theme-color" content="#1467e8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Izyan Shop">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6fb;--text:#0f1b2d;--muted:#64748b;--line:#d7e2ee;--accent:#1677e0;--accent2:#0f5bb8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 90% -10%,#d9efff 0,transparent 28rem),radial-gradient(circle at 0 40%,#eef3ff 0,transparent 24rem),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.wrap{width:min(1280px,94%);margin:auto}.hidden{display:none!important}
+header{position:sticky;top:0;z-index:50;background:#ffffffd9;backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.top{height:70px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:11px}
+.mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#3ec2ff,#1467e8);display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 10px 24px #1677e044}
+.brand b{display:block;font-size:15px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.6px;margin-top:2px}
+.steps{display:flex;gap:8px}.dot{width:8px;height:8px;border-radius:50%;background:#c5d3e0}.dot.active{background:var(--accent);box-shadow:0 0 0 4px #1677e01a}
+main{padding:34px 0 80px}
+.heroTitle{text-align:center;max-width:820px;margin:0 auto 26px}
+.eyebrow{color:#0b78c9;font-size:11px;font-weight:800;letter-spacing:2.2px}
+.heroTitle h1{font-size:clamp(30px,4.8vw,52px);line-height:1.02;margin:10px 0 12px;letter-spacing:-1.8px}
+.heroTitle p{color:var(--muted);line-height:1.7;margin:0}
+.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:26px;box-shadow:0 22px 70px #10203310}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}
+.field label{font-size:12px;font-weight:800;color:#334155}
+.field input,.field select{width:100%;padding:12px 13px;border-radius:12px;border:1px solid #d5e0eb;background:#fff;outline:none}
+.field input:focus,.field select:focus{border-color:#7cc4ff;box-shadow:0 0 0 3px #1677e014}
+.help{font-size:11px;color:#7d90a6}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 10px 24px #1677e033}
+.btn.secondary{background:#fff;border:1px solid var(--line);color:#1e293b;box-shadow:none}
+.themeArea{margin-top:18px}.themeTitle{font-weight:800;margin-bottom:10px}
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.theme{border:1px solid #d8e2ec;background:#fff;border-radius:16px;padding:13px;text-align:left;color:#102033}
+.theme.active{border-color:#1677e0;box-shadow:0 0 0 3px #1677e018}
+.theme strong{display:block;font-size:13px}.theme span{display:block;color:#64748b;font-size:11px;margin-top:3px}
+.themeSwatch{height:46px;border-radius:10px;margin-bottom:10px}
+.loader{text-align:center;padding:58px 20px}
+.spinner{width:46px;height:46px;border:4px solid #e8eef5;border-top-color:var(--accent);border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.browserMock{background:#dbe3ec;border:1px solid var(--line);border-radius:18px 18px 0 0;padding:11px 14px;display:flex;align-items:center;gap:12px}
+.dots{display:flex;gap:6px}.dots i{width:10px;height:10px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.fakeUrl{flex:1;background:#fff;border-radius:999px;padding:6px 14px;font-size:12px;color:#5b6b7d;text-align:center;border:1px solid #ccd7e2}
+.previewShell{border:1px solid var(--line);border-radius:0 0 22px 22px;overflow:hidden;box-shadow:0 28px 80px #10203318}
+.previewFrame{height:88vh;min-height:640px;width:100%;border:0;background:#fff;display:block}
+.miniActions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.notice{padding:13px 15px;border-radius:12px;background:#0d8fd60d;border:1px solid #0d8fd622;color:#0a5a8a;font-size:12.5px;line-height:1.6}
+.source{width:100%;min-height:220px;background:#0b1220;color:#bfe7ff;border:1px solid var(--line);border-radius:14px;padding:14px;font:12px/1.55 ui-monospace,Consolas,monospace}
+.logoRow{display:flex;align-items:center;gap:14px}
+.logoPreviewBox{width:56px;height:56px;border-radius:13px;border:1px dashed #c3d1de;display:grid;place-items:center;overflow:hidden;background:#f6f9fc;flex-shrink:0;font-size:10px;color:#94a3b8}
+.logoPreviewBox img{width:100%;height:100%;object-fit:contain}
+.templateRow{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:#f6f9fc;border:1px solid var(--line);border-radius:15px;padding:16px}
+@media(max-width:760px){.grid,.themes{grid-template-columns:1fr}.steps{display:none}.previewFrame{height:70vh}}
+.lock{position:fixed;inset:0;z-index:9999;background:#0b1220f2;backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:24px}
+.lock.ok{display:none}
+.lockCard{width:min(420px,100%);background:#fff;border-radius:22px;padding:28px 26px 24px;box-shadow:0 30px 80px #0006}
+.lockCard h2{margin:0 0 6px;font-size:22px;letter-spacing:-.6px}
+.lockCard p{margin:0 0 16px;color:#64748b;font-size:13.5px;line-height:1.55}
+.lockCard input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid #d5e0eb;margin-bottom:12px}
+.lockCard input:focus{outline:none;border-color:#7cc4ff;box-shadow:0 0 0 3px #1677e014}
+.lockErr{display:none;color:#b91c1c;font-size:12px;font-weight:700;margin:-4px 0 10px}
+.lockErr.show{display:block}
+.installBtn{border:1px solid var(--line);background:#fff;color:#0f1b2d;border-radius:11px;padding:8px 12px;font-size:12px;font-weight:800}
+.installNote{position:fixed;left:16px;right:16px;bottom:16px;z-index:80;background:#0b1220;color:#fff;border-radius:16px;padding:14px 16px;display:none;box-shadow:0 16px 40px #0005;align-items:center;justify-content:space-between;gap:12px}
+.installNote.show{display:flex}
+.installNote p{margin:0;font-size:13px;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="lock" id="lockGate">
+  <form class="lockCard" id="lockForm" autocomplete="off">
+    <div class="eyebrow" style="margin-bottom:8px">IZYAN DIGITAL SHOP</div>
+    <h2>Please enter password</h2>
+    <p>Yeh configurator protected hai. Password ke baad hi demo builder khulega.</p>
+    <input id="lockPass" type="password" placeholder="Enter password" autofocus>
+    <div class="lockErr" id="lockErr">Galat password. Dobara try karo.</div>
+    <button class="btn" type="submit" style="width:100%">Unlock</button>
+  </form>
+</div>
+<header><div class="wrap top"><div class="brand"><div class="mark">✦</div><div><b>Digital Shop Configurator</b><small>BUILD • PREVIEW • LAUNCH</small></div></div><div style="display:flex;align-items:center;gap:10px"><button class="installBtn" id="installBtn" type="button">Install App</button><div class="steps"><i class="dot active"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i></div></div></div></header>
+<div class="installNote" id="iosTip"><p>iPhone: Share button → <b>Add to Home Screen</b></p><button class="btn secondary" type="button" id="iosTipClose" style="padding:8px 12px">OK</button></div>
+<main><div class="wrap">
+
+<section id="step1">
+<div class="heroTitle">
+  <div class="eyebrow">CLIENT-READY STOREFRONTS</div>
+  <h1>Build a digital shop that looks like a real brand website.</h1>
+  <p>Category-specific themes, live demo, WhatsApp checkout, and optional dynamic UPI QR — all in one preview you can show the client.</p>
+</div>
+<div class="card"><div class="grid">
+<div class="field"><label>Shop Name *</label><input id="shopName" placeholder="e.g. Khalifa Attar & Perfumes"></div>
+<div class="field"><label>Owner / Customer Name *</label><input id="ownerName" placeholder="e.g. Vahab Shaikh"></div>
+<div class="field"><label>GST No. (optional)</label><input id="gst" placeholder="e.g. 27ABCDE1234F1Z5"></div>
+<div class="field"><label>WhatsApp Number *</label><input id="wa" placeholder="e.g. 919819664949"></div>
+<div class="field full"><label>Business Category *</label>
+<select id="category">
+  <option value="auto">🚗 Auto / Car AC Service</option>
+  <option value="restaurant">🍽️ Restaurant / Cafe</option>
+  <option value="salon">💇 Salon / Beauty</option>
+  <option value="fashion">👗 Fashion / Clothing</option>
+  <option value="electronics">📱 Electronics / Mobile</option>
+  <option value="grocery">🛒 Grocery / General Store</option>
+  <option value="sweets">🎂 Cake / Sweet Shop</option>
+  <option value="custom">✨ Custom Business</option>
+</select></div>
+<div class="field full hidden" id="customWrap"><label>Custom Business Type *</label><input id="customCat" placeholder="e.g. Attar & Perfume Shop, Dental Clinic"></div>
+<div class="field full"><label>Checkout Mode</label>
+<select id="checkout">
+  <option value="wa">WhatsApp Only</option>
+  <option value="upi">WhatsApp + Dynamic UPI QR</option>
+</select></div>
+<div class="field full hidden" id="upiWrap"><label>UPI ID *</label><input id="upi" placeholder="business@upi"><div class="help">Demo preview will show a live QR that changes with cart total.</div></div>
+<div class="field full"><label>Visit / time-slot booking</label>
+<select id="bookingMode">
+  <option value="auto">Auto — category ke hisaab se</option>
+  <option value="on">Hamesha dikhao (salon, garage, clinic)</option>
+  <option value="off">Hata do (attar, fashion, kirana)</option>
+</select>
+<div class="help" id="bookingHint">Attar, perfume, cloth, grocery, electronics, sweets pe date-time form nahi aayega.</div></div>
+</div>
+<div class="themeArea"><div class="themeTitle">Choose a visual theme for this business</div><div id="themes" class="themes"></div>
+<div class="help" style="margin-top:8px">Har category ke 3 alag palettes — light, dark luxury, aur bold brand look.</div></div>
+<div class="actions"><button class="btn" id="generate">Generate Full Demo</button></div></div>
+</section>
+
+<section id="step2" class="hidden"><div class="card loader"><div class="spinner"></div><h2 id="loadTitle">Building your demo...</h2><p id="loadText">Preparing the hero, catalogue and checkout.</p></div></section>
+
+<section id="step3" class="hidden">
+<div class="heroTitle"><div class="eyebrow">LIVE CLIENT DEMO</div><h1 id="demoHeading">Your business, presented properly.</h1><p>Client ko yeh preview dikhao. Checkout mode (WhatsApp / UPI QR) demo ke andar hi kaam karega.</p></div>
+<div class="browserMock"><div class="dots"><i></i><i></i><i></i></div><div class="fakeUrl" id="fakeUrl">yourshop.com</div></div>
+<div class="previewShell"><iframe id="preview" class="previewFrame"></iframe></div>
+<div class="miniActions"><button class="btn secondary" id="regen">Change & Regenerate</button><button class="btn" id="finalize">Finalize This Design →</button></div>
+</section>
+
+<section id="step4" class="hidden">
+<div class="heroTitle"><div class="eyebrow">CONNECT REAL DATA</div><h1>Client ki real details connect karo.</h1><p>Logo aur Google Sheet products final page pe load honge.</p></div>
+<div class="card">
+<div class="templateRow">
+<div><b style="display:block;margin-bottom:4px">1. Sample sheet do client ko</b><span class="help">Type = product ya offer. Offer band karna ho to Active = Inactive — page pe “coming soon” aa jayega.</span></div>
+<button class="btn secondary" id="downloadTemplate">Download Sample CSV</button>
+</div>
+<div class="field full" style="margin-top:18px"><label>2. Published Google Sheet CSV link</label><input id="csvUrl" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"></div>
+<div class="field full" style="margin-top:18px"><label>3. Client logo (optional)</label>
+<div class="logoRow"><div class="logoPreviewBox" id="logoPreviewBox">No logo</div><input type="file" id="logoFile" accept="image/*" style="flex:1"></div></div>
+<div class="notice" style="margin-top:18px"><b>Photos:</b> Image Name mein <code>product1.jpg</code>, files <code>images/</code> folder mein. <b>Offers:</b> Type column <code>offer</code> + Offer Title jaise <code>Festival Offer</code> + Offer Detail <code>10% off on mithai</code>. Active nahi hai to banner: “Stay tuned — our offer will be coming soon.”</div>
+<div class="actions"><button class="btn" id="makeFinal">Generate Final Page →</button></div>
+</div>
+</section>
+
+<section id="step5" class="hidden">
+<div class="heroTitle"><div class="eyebrow">READY TO DELIVER</div><h1>Client page ready hai.</h1><p>Single HTML download karke GitHub Pages / Cloudflare pe host karo.</p></div>
+<div class="card"><textarea id="source" class="source" readonly></textarea><div class="actions"><button class="btn" id="download">Download HTML</button></div></div>
+</section>
+
+</div></main>
+<script>
+const $=s=>document.querySelector(s); const state={};
+const GATE_KEY='izyan_shop_gate_v1';
+const GATE_PASS='Vahab@0597';
+(function(){
+  const gate=$('#lockGate'), form=$('#lockForm'), inp=$('#lockPass'), err=$('#lockErr');
+  if(sessionStorage.getItem(GATE_KEY)==='ok'){gate.classList.add('ok');return}
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    if(inp.value===GATE_PASS){sessionStorage.setItem(GATE_KEY,'ok');gate.classList.add('ok')}
+    else{err.classList.add('show');inp.value='';inp.focus()}
+  });
+})();
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+let deferredPrompt=null;
+const installBtn=$('#installBtn');
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredPrompt=e; if(installBtn) installBtn.style.boxShadow='0 0 0 3px #1677e033';
+});
+function isIos(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
+function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true}
+if(installBtn){
+  if(isStandalone()) installBtn.textContent='App installed';
+  installBtn.onclick=async()=>{
+    if(isStandalone()){alert('App already installed.');return}
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt=null;
+      return;
+    }
+    if(isIos()){ $('#iosTip').classList.add('show'); return; }
+    alert('Browser ke menu se Install app / Add to Home Screen choose karo. HTTPS pe host karna zaroori hai.');
+  };
+}
+$('#iosTipClose')&&($('#iosTipClose').onclick=()=>$('#iosTip').classList.remove('show'));
+
+
+
+const THEMES={
+  auto:[
+    ['Steel Bay','Clean workshop / service centre','linear-gradient(135deg,#eef2f6,#94a3b8)'],
+    ['Midnight Garage','Dark premium automotive','linear-gradient(135deg,#0b1220,#1e3a5f)'],
+    ['Racing Signal','Bold red service brand','linear-gradient(135deg,#3b0a0a,#ef4444)']
+  ],
+  restaurant:[
+    ['Warm Table','Soft cafe / bistro','linear-gradient(135deg,#fff7ed,#fdba74)'],
+    ['After Hours','Dark fine-dining','linear-gradient(135deg,#1c1410,#8b5e34)'],
+    ['Garden Cafe','Fresh herb & mint','linear-gradient(135deg,#ecfdf5,#6ee7b7)']
+  ],
+  salon:[
+    ['Rose Atelier','Soft blush studio','linear-gradient(135deg,#fff1f2,#f9a8d4)'],
+    ['Champagne Glow','Warm elegant salon','linear-gradient(135deg,#faf6f0,#d4b896)'],
+    ['Noir Velvet','Dark luxury beauty','linear-gradient(135deg,#1a1220,#7c3aed)']
+  ],
+  fashion:[
+    ['Ivory Edit','Magazine / lookbook','linear-gradient(135deg,#fafafa,#d4d4d8)'],
+    ['Night Runway','Bold street label','linear-gradient(135deg,#111111,#52525b)'],
+    ['Gold Atelier','Luxury boutique','linear-gradient(135deg,#f8f1e4,#c9a36a)']
+  ],
+  electronics:[
+    ['Ice Lab','Clean gadget store','linear-gradient(135deg,#eff6ff,#93c5fd)'],
+    ['Circuit Night','Futuristic dark tech','linear-gradient(135deg,#070b16,#2563eb)'],
+    ['Carbon Desk','Neutral pro retail','linear-gradient(135deg,#f8fafc,#64748b)']
+  ],
+  grocery:[
+    ['Green Basket','Fresh produce market','linear-gradient(135deg,#f0fdf4,#86efac)'],
+    ['Sunrise Mart','Warm everyday store','linear-gradient(135deg,#fff7ed,#fdba74)'],
+    ['Mint Aisle','Cool modern kirana','linear-gradient(135deg,#ecfeff,#5eead4)']
+  ],
+  sweets:[
+    ['Mithai Ghar','Warm saffron sweet shop','linear-gradient(135deg,#fff7ed,#fdba74)'],
+    ['Royal Halwai','Maroon-gold festive','linear-gradient(135deg,#3b0a12,#e8b86d)'],
+    ['Pastel Patisserie','Cake studio / bakery','linear-gradient(135deg,#fff1f2,#f9a8d4)']
+  ],
+  custom:[
+    ['Signature Blue','Trust / professional','linear-gradient(135deg,#eff6ff,#93c5fd)'],
+    ['Royal Dark','Luxury brand','linear-gradient(135deg,#0c0a09,#b45309)'],
+    ['Soft Studio','Calm modern studio','linear-gradient(135deg,#f8fafc,#cbd5e1)']
+  ]
+};
+
+const PALETTE={
+  auto:[
+    {bg:'#f4f6f8',fg:'#111827',muted:'#64748b',card:'#ffffff',line:'#dbe3ea',accent:'#c2410c',accent2:'#9a3412'},
+    {bg:'#0b1018',fg:'#f3f4f6',muted:'#9aa6b8',card:'#151c28',line:'#ffffff14',accent:'#38bdf8',accent2:'#0284c7'},
+    {bg:'#140808',fg:'#fff7f7',muted:'#d7a3a3',card:'#1f1010',line:'#ffffff14',accent:'#ef4444',accent2:'#b91c1c'}
+  ],
+  restaurant:[
+    {bg:'#fffaf4',fg:'#3b2416',muted:'#8b6a52',card:'#ffffff',line:'#f0e0d0',accent:'#c2410c',accent2:'#9a3412'},
+    {bg:'#120e0b',fg:'#f8efe4',muted:'#c4a88a',card:'#1c1612',line:'#ffffff14',accent:'#d4a373',accent2:'#b08968'},
+    {bg:'#f4fbf7',fg:'#14532d',muted:'#4d7c5b',card:'#ffffff',line:'#d7eee0',accent:'#059669',accent2:'#047857'}
+  ],
+  salon:[
+    {bg:'#fff7f9',fg:'#4a1d32',muted:'#a56b84',card:'#ffffff',line:'#f3d5e2',accent:'#db2777',accent2:'#be185d'},
+    {bg:'#faf6f1',fg:'#3f2d1f',muted:'#8b735b',card:'#ffffff',line:'#eadccb',accent:'#b45309',accent2:'#92400e'},
+    {bg:'#120e16',fg:'#f8eefe',muted:'#c4b0d4',card:'#1b1522',line:'#ffffff14',accent:'#e879f9',accent2:'#c026d3'}
+  ],
+  fashion:[
+    {bg:'#fafafa',fg:'#111111',muted:'#6b7280',card:'#ffffff',line:'#e5e7eb',accent:'#111111',accent2:'#374151'},
+    {bg:'#0a0a0a',fg:'#fafafa',muted:'#a1a1aa',card:'#171717',line:'#ffffff14',accent:'#fafafa',accent2:'#d4d4d8'},
+    {bg:'#f7f1e8',fg:'#3b2a14',muted:'#8b7355',card:'#fffdf8',line:'#e8d9c3',accent:'#b45309',accent2:'#78350f'}
+  ],
+  electronics:[
+    {bg:'#f5f8ff',fg:'#0f172a',muted:'#64748b',card:'#ffffff',line:'#dbe4f3',accent:'#2563eb',accent2:'#1d4ed8'},
+    {bg:'#070b16',fg:'#e2e8f0',muted:'#94a3b8',card:'#10182a',line:'#ffffff14',accent:'#60a5fa',accent2:'#2563eb'},
+    {bg:'#f8fafc',fg:'#0f172a',muted:'#64748b',card:'#ffffff',line:'#e2e8f0',accent:'#0f172a',accent2:'#334155'}
+  ],
+  grocery:[
+    {bg:'#f5fbf6',fg:'#14532d',muted:'#4d7c5b',card:'#ffffff',line:'#d7eee0',accent:'#16a34a',accent2:'#15803d'},
+    {bg:'#fff8f1',fg:'#7c2d12',muted:'#b45309',card:'#ffffff',line:'#f3ddc4',accent:'#ea580c',accent2:'#c2410c'},
+    {bg:'#f0fdfa',fg:'#134e4a',muted:'#0f766e',card:'#ffffff',line:'#cceee8',accent:'#0d9488',accent2:'#0f766e'}
+  ],
+  sweets:[
+    {bg:'#fffaf3',fg:'#5c2e0a',muted:'#a16207',card:'#ffffff',line:'#f3e0c4',accent:'#d97706',accent2:'#b45309'},
+    {bg:'#1a0a0e',fg:'#fde7c0',muted:'#e0b070',card:'#2a1218',line:'#ffffff14',accent:'#e8b86d',accent2:'#b45309'},
+    {bg:'#fff7f8',fg:'#4a1d32',muted:'#a56b84',card:'#ffffff',line:'#f3d5e2',accent:'#db2777',accent2:'#be185d'}
+  ],
+  custom:[
+    {bg:'#f5f8ff',fg:'#0f172a',muted:'#64748b',card:'#ffffff',line:'#dbe4f3',accent:'#2563eb',accent2:'#1d4ed8'},
+    {bg:'#0c0a09',fg:'#faf6f0',muted:'#d6b894',card:'#171412',line:'#ffffff14',accent:'#d4a373',accent2:'#b45309'},
+    {bg:'#f8fafc',fg:'#0f172a',muted:'#64748b',card:'#ffffff',line:'#e2e8f0',accent:'#334155',accent2:'#0f172a'}
+  ]
+};
+
+const IMG={
+  auto:'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1600&q=80',
+  restaurant:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80',
+  salon:'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=80',
+  fashion:'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1600&q=80',
+  electronics:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1600&q=80',
+  grocery:'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80',
+  sweets:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1600&q=80',
+  custom:'https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=1600&q=80'
+};
+
+const DATA={
+  auto:{label:'Auto / Car AC Service',hero:'Factory-grade cooling. Same-day confidence.',sub:'Diagnostics, gas charging, compressor work and cabin cleaning — booked in one tap.',stats:[['12+','Years'],['6,200+','Cars'],['4.9★','Rating'],['Same day','Slots']],services:[['❄️','Gas Charging','Leak check + precise recharge.'],['🧰','AC Repair','Compressor, vents and electrics.'],['✨','Cabin Clean','Filters, ducts, fresh airflow.'],['⚙️','Compressor','Inspect, repair or replace.']],items:[['AC Gas Recharge','₹1,499'],['Full AC Service','₹999'],['Deep Cleaning','₹799'],['Cabin Filter','₹349']],cta:'Book AC Visit',book:true},
+  restaurant:{label:'Restaurant / Cafe',hero:'A table worth dressing up for.',sub:'Signature plates, weekend specials and takeaway — ordered without the phone queue.',stats:[['28','Dishes'],['4.8★','Guests'],['12 min','Avg wait'],['Daily','Specials']],services:[['🍽️','Chef Menu','Seasonal plates and combos.'],['🥤','Bar & Brews','Coffee, coolers, mocktails.'],['🎉','Group Table','Party trays and set menus.'],['🛵','Takeaway','WhatsApp confirm + pickup.']],items:[['Signature Thali','₹399'],['Chef Special','₹249'],['Cold Brew','₹149'],['Dessert Plate','₹179']],cta:'Reserve / Order',book:true},
+  salon:{label:'Salon / Beauty',hero:'Quiet luxury. Visible glow.',sub:'Cuts, colour, spa and skin — pick a chair, pick a time.',stats:[['9 yrs','Craft'],['3,400+','Clients'],['4.9★','Rating'],['Online','Slots']],services:[['✂️','Cut & Finish','Precision cut, blow-dry.'],['💆','Hair Ritual','Spa, mask, scalp care.'],['✨','Skin Glow','Facials tailored to skin.'],['💅','Hands & Feet','Mani, pedi, polish.']],items:[['Signature Cut','₹699'],['Hair Spa','₹1,199'],['Glow Facial','₹899'],['Mani-Pedi','₹799']],cta:'Book a Chair',book:true},
+  fashion:{label:'Fashion / Clothing',hero:'Looks that hold a room.',sub:'Drop collections, easy sizes, WhatsApp checkout — boutique energy, digital speed.',stats:[['180+','Styles'],['Pan India','Ship'],['4.8★','Fit love'],['48h','Dispatch']],services:[['✦','New Drop','This week’s edit.'],['🧥','Atelier','Occasion and tailoring.'],['📏','Fit Desk','Size help on chat.'],['📦','Easy Order','Cart to WhatsApp.']],items:[['Linen Shirt','₹1,499'],['Structured Jacket','₹3,499'],['Everyday Tee','₹799'],['Wide Trouser','₹1,899']],cta:'Shop the Edit',book:false},
+  electronics:{label:'Electronics / Mobile',hero:'Genuine devices. Clear prices.',sub:'Phones, audio, power and repair desk — warranty talk without the runaround.',stats:[['14 yrs','Retail'],['9k+','Sold'],['4.7★','Trust'],['GST','Invoice']],services:[['📱','Mobiles','Flagship to daily driver.'],['🎧','Audio & Power','Buds, banks, bricks.'],['🔧','Service Desk','Diagnosis on chat.'],['🛡️','Warranty','Claim help, genuine parts.']],items:[['Wireless Buds','₹1,999'],['65W Charger','₹1,299'],['20k Power Bank','₹1,799'],['Tempered Glass','₹299']],cta:'Check Availability',book:false},
+  grocery:{label:'Grocery / General Store',hero:'The kirana, dressed for today.',sub:'Staples, fresh packs and monthly baskets — list goes to WhatsApp in one send.',stats:[['Local','Since ’08'],['Same day','Lane'],['4.8★','Repeat'],['GST','Bill']],services:[['🥦','Fresh Lane','Veg, dairy, bread.'],['🥛','Daily Pack','Milk, eggs, tea.'],['🧺','Family Basket','Value combos.'],['🛵','Lane Drop','Nearby delivery.']],items:[['Weekly Basket','₹999'],['Fresh Mix','₹599'],['Monthly Saver','₹2,499'],['Tea + Sugar','₹249']],cta:'Send My List',book:false},
+  sweets:{label:'Cake / Sweet Shop',hero:'Boxes that arrive like a celebration.',sub:'Mithai tins, designer cakes and festive hampers — order on WhatsApp before the box is tied.',stats:[['40+','Mithai'],['Same day','Pickup'],['4.9★','Occasions'],['Custom','Cakes']],services:[['🍬','Classic Mithai','Kaju, motichoor, soan.'],['🎂','Designer Cakes','Birthday, anniversary, theme.'],['🎁','Festive Tins','Diwali, Eid, wedding trays.'],['🚚','Box & Pickup','Same-day slot on chat.']],items:[['Kaju Katli 500g','₹749'],['Gulab Jamun Box','₹349'],['Designer Cake 1kg','₹1,299'],['Mix Mithai Tin','₹999']],cta:'Order a Box',book:false,offers:[{title:'Festival Offer',detail:'10% off on mithai tins & mix boxes. Mention this page on WhatsApp.'},{title:'Cake of the Week',detail:'1kg designer cake at a fixed festive price — limited slots.'}]},
+  custom:{label:'Custom Business',hero:'A storefront that feels like your brand.',sub:'Services, products and pay-on-UPI — one page clients can actually use.',stats:[['Brand','First'],['Direct','Chat'],['4.9★','Feel'],['Live','Catalogue']],services:[['★','Signature Offer','Lead with your best work.'],['📋','Catalogue','Clear names and prices.'],['💬','Instant Enquire','WhatsApp without friction.'],['🛒','Cart & Pay','Add items, scan UPI, send on chat.']],items:[['Signature','₹999'],['Popular Pack','₹1,499'],['Premium','₹2,499'],['Add-on','₹349']],cta:'Start Enquiry',book:false}
+};
+
+const BOOK_BY_CAT={auto:true,restaurant:true,salon:true,fashion:false,electronics:false,grocery:false,sweets:false,custom:false};
+function bookingHint(){
+  const cat=$('#category').value, mode=$('#bookingMode').value;
+  const on=mode==='on'||(mode==='auto'&&BOOK_BY_CAT[cat]);
+  $('#bookingHint').textContent=on
+    ? 'Is demo mein date + time slot form dikhega (visit / appointment).'
+    : 'Is category mein booking form nahi aayega — sirf cart + WhatsApp'+( $('#checkout').value==='upi'?' + UPI QR.':'');
+}
+function renderThemes(){
+  const cat=$('#category').value;
+  $('#customWrap').classList.toggle('hidden',cat!=='custom');
+  bookingHint();
+  const list=THEMES[cat];
+  $('#themes').innerHTML=list.map((t,i)=>`<button class="theme ${i===0?'active':''}" data-theme="${i}"><div class="themeSwatch" style="background:${t[2]}"></div><strong>${t[0]}</strong><span>${t[1]}</span></button>`).join('');
+  state.theme=0;
+  document.querySelectorAll('.theme').forEach(b=>b.onclick=()=>{document.querySelectorAll('.theme').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.theme=+b.dataset.theme});
+}
+$('#category').onchange=renderThemes;
+$('#bookingMode').onchange=bookingHint;
+$('#checkout').onchange=()=>{$('#upiWrap').classList.toggle('hidden',$('#checkout').value!=='upi');bookingHint();};
+renderThemes();
+
+$('#logoFile').onchange=(e)=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{state.logo=r.result;$('#logoPreviewBox').innerHTML='<img src="'+r.result+'">'};r.readAsDataURL(f)};
+
+$('#downloadTemplate').onclick=()=>{
+  const csv='Type,Product Name,Price,Active,Image Name,Offer Title,Offer Detail\nproduct,Sample Product 1,499,Active,product1.jpg,,\nproduct,Sample Product 2,999,Active,product2.jpg,,\nproduct,Sample Product 3,1499,Inactive,product3.jpg,,\noffer,,,Active,,Festival Offer,10% off on selected items this week\n';
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='product-sheet-template.csv';document.body.appendChild(a);a.click();a.remove();
+};
+
+function collect(){
+  const shop=$('#shopName').value.trim(),owner=$('#ownerName').value.trim(),wa=$('#wa').value.replace(/\D/g,'');
+  if(!shop||!owner||!wa){alert('Shop Name, Owner Name aur WhatsApp number zaroori hai.');return null}
+  if($('#category').value==='custom'&&!$('#customCat').value.trim()){alert('Custom business type likho.');return null}
+  if($('#checkout').value==='upi'&&!$('#upi').value.trim()){alert('UPI ID daalo.');return null}
+  const cat=$('#category').value;
+  const bMode=$('#bookingMode').value;
+  const book=bMode==='on'||(bMode==='auto'&&!!BOOK_BY_CAT[cat]);
+  return {shop,owner,gst:$('#gst').value.trim(),wa,category:cat,customCat:$('#customCat').value.trim(),checkout:$('#checkout').value,upi:$('#upi').value.trim(),theme:state.theme,book};
+}
+function show(id){['step1','step2','step3','step4','step5'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==id)); const idx=['step1','step2','step3','step4','step5'].indexOf(id);document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));window.scrollTo({top:0,behavior:'smooth'});}
+function safe(s){return String(s??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[m]));}
+
+function buildPage(c){
+  const csv=c.csv||'', logo=c.logo||'';
+  const d=Object.assign({}, DATA[c.category]||DATA.custom);
+  if(c.category==='custom' && c.customCat) d.label=c.customCat;
+  const showBook=c.book===true;
+  const pal=(PALETTE[c.category]||PALETTE.custom)[c.theme||0];
+  const products=d.items.map((x,i)=>({name:x[0],price:x[1],image:IMG[c.category],id:'demo'+i}));
+  const demoOffers=d.offers||[{title:'Festival Offer',detail:'10% off on selected items. Mention this page on WhatsApp.'}];
+  const logoHTML = logo ? '<img src="'+logo+'" style="height:36px;display:block;border-radius:8px;object-fit:contain">' : '<div>'+safe(c.shop)+'<small>'+safe(d.label)+(c.gst?' • GST '+safe(c.gst):'')+'</small></div>';
+  const useUpi = c.checkout==='upi' && c.upi;
+  const btnFg = (c.category==='fashion' && c.theme===1) ? '#111' : '#fff';
+
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safe(c.shop)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:${pal.bg};color:${pal.fg};font-family:Inter,system-ui,sans-serif}
+.wrap{width:min(1140px,92%);margin:auto}
+.nav{position:sticky;top:0;z-index:40;background:${pal.bg}ee;backdrop-filter:blur(16px);border-bottom:1px solid ${pal.line}}
+.navin{height:72px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.logo{font-weight:800;letter-spacing:-.3px}.logo small{display:block;color:${pal.muted};font-size:9px;letter-spacing:1.4px;margin-top:3px;font-weight:600}
+.links{display:flex;gap:20px;font-size:13px;font-weight:700}.links a{color:${pal.fg};text-decoration:none;opacity:.82}
+.links a:hover{opacity:1}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:64px 0 36px}
+.tag{color:${pal.accent};font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+.hero h1{font-size:clamp(36px,5.6vw,68px);line-height:.96;letter-spacing:-2.4px;margin:12px 0 16px}
+.hero p{color:${pal.muted};font-size:17px;line-height:1.7;max-width:520px}
+.heroBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border-radius:12px;background:${pal.accent};color:${btnFg};text-decoration:none;font-weight:800;border:0;font-size:14px;cursor:pointer}
+.btn.alt{background:transparent;border:1px solid ${pal.line};color:${pal.fg}}
+.heroImg{height:500px;border-radius:28px;background:linear-gradient(180deg,#0000 30%,#0007),url('${IMG[c.category]}') center/cover;box-shadow:0 28px 70px #00000030;position:relative}
+.heroBadge{position:absolute;left:18px;bottom:18px;background:#fff;color:#111;border-radius:14px;padding:12px 14px;font-size:12px;font-weight:800;box-shadow:0 10px 28px #0004}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:${pal.card};border:1px solid ${pal.line};border-radius:20px;margin:8px 0 20px}
+.stat{padding:20px 12px;text-align:center;border-right:1px solid ${pal.line}}.stat:last-child{border-right:0}
+.stat b{display:block;font-size:22px;color:${pal.accent}}.stat span{display:block;color:${pal.muted};font-size:11px;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+.section{padding:64px 0}.sectionHead{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:24px}
+.sectionHead h2{font-size:32px;letter-spacing:-1.2px;margin:0}.sectionHead p{color:${pal.muted};max-width:420px;margin:0;line-height:1.6}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.cardx{background:${pal.card};border:1px solid ${pal.line};border-radius:20px;overflow:hidden}
+.service{padding:22px;min-height:188px}.icon{font-size:26px}.service h3{margin:14px 0 6px;font-size:16px}.service p{color:${pal.muted};font-size:13px;line-height:1.6;margin:0}
+.imgWrap{height:190px;background:${pal.line};display:grid;place-items:center}.imgWrap img{width:100%;height:100%;object-fit:cover}
+.pbody{padding:16px}.pbody h3{margin:0 0 6px;font-size:15px}.price{font-weight:800;color:${pal.accent};font-size:17px}
+.add{width:100%;margin-top:12px;border:1px solid ${pal.line};background:transparent;color:${pal.fg};padding:10px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer}
+.add:hover{border-color:${pal.accent};color:${pal.accent}}
+.about{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:center}
+.aboutImg{min-height:340px;border-radius:24px;background:url('${IMG[c.category]}') center/cover}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.check{padding:12px;border-radius:12px;background:${pal.card};border:1px solid ${pal.line};font-size:12px;font-weight:700}
+.booking{background:${pal.card};border:1px solid ${pal.line};border-radius:22px;padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.booking input,.booking select,.booking textarea,.drawer input,.drawer textarea{width:100%;padding:12px;border-radius:10px;border:1px solid ${pal.line};background:${pal.bg};color:${pal.fg}}
+.booking button{grid-column:1/-1}
+.payBox{display:grid;grid-template-columns:160px 1fr;gap:18px;align-items:center;background:${pal.card};border:1px solid ${pal.line};border-radius:22px;padding:22px}
+.payBox img{width:148px;height:148px;border-radius:12px;background:#fff;padding:8px}
+.payBox h3{margin:0 0 6px}.payBox p{margin:0;color:${pal.muted};font-size:13px;line-height:1.6}
+.test{padding:20px}.stars{color:${pal.accent};letter-spacing:2px}.test p{color:${pal.muted};line-height:1.65;font-size:13.5px}
+.contact{background:${pal.card};border:1px solid ${pal.line};border-radius:22px;padding:24px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.footer{border-top:1px solid ${pal.line};padding:36px 0 96px;color:${pal.muted};font-size:12px}.footer strong{color:${pal.fg}}
+.cartFloat{position:fixed;right:18px;bottom:18px;z-index:70;border:0;border-radius:999px;padding:14px 18px;background:${pal.accent};color:${btnFg};font-weight:800;box-shadow:0 14px 36px #0005;font-size:14px}
+.cartCount{background:#fff;color:#111;border-radius:99px;padding:1px 7px;margin-left:6px;font-size:12px}
+.modal{position:fixed;inset:0;background:#0008;z-index:90;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.drawer{width:min(520px,100%);background:${pal.card};color:${pal.fg};border-radius:22px 22px 0 0;padding:22px;max-height:88vh;overflow:auto}
+.drawerHead{display:flex;justify-content:space-between;align-items:center}
+.close{border:0;background:${pal.bg};color:${pal.fg};border-radius:10px;padding:8px 11px}
+.cartLine{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid ${pal.line};font-size:14px}
+.empty{color:${pal.muted};padding:20px 0}
+.total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin:16px 0}
+.qrWrap{display:none;text-align:center;padding:14px;border:1px dashed ${pal.line};border-radius:16px;margin:8px 0 4px;background:${pal.bg}}
+.qrWrap.show{display:block}
+.qrWrap img{width:168px;height:168px;background:#fff;padding:8px;border-radius:10px}
+.qrWrap small{display:block;color:${pal.muted};margin-top:8px;font-size:11px}
+.modePill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.4px;padding:6px 10px;border-radius:999px;border:1px solid ${pal.line};color:${pal.muted};margin-top:10px}
+.offerSec{padding:8px 0 10px}
+.offerRect{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:92px;padding:18px 22px;border-radius:14px;border:1px solid ${pal.line};background:linear-gradient(90deg,${pal.card},${pal.bg});box-shadow:0 8px 28px #00000010;margin-bottom:12px}
+.offerRect.soon{opacity:.92;background:${pal.card}}
+.offerKicker{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:${pal.accent};margin:0 0 4px}
+.offerRect h3{margin:0 0 4px;font-size:22px;letter-spacing:-.4px}
+.offerRect p{margin:0;color:${pal.muted};font-size:14px;line-height:1.5}
+.offerBadge{flex-shrink:0;border-radius:10px;padding:10px 14px;background:${pal.accent};color:${btnFg};font-weight:800;font-size:13px;white-space:nowrap}
+@media(max-width:800px){.hero,.about,.payBox,.contact,.offerRect{grid-template-columns:1fr}.offerRect{display:block}.offerBadge{display:inline-block;margin-top:12px}.heroImg{height:340px}.stats,.g4{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.links{display:none}.booking{grid-template-columns:1fr}.checks{grid-template-columns:1fr}}
+@media(max-width:520px){.g4,.stats{grid-template-columns:1fr}.hero{padding:36px 0}}
+</style></head><body>
+<nav class="nav"><div class="wrap navin"><div class="logo">${logoHTML}</div><div class="links"><a href="#offers">Offers</a><a href="#services">Services</a><a href="#products">Catalogue</a>${showBook?'<a href="#booking">Book</a>':''}${useUpi?'<a href="#pay">Pay</a>':''}<a href="#contact">Contact</a></div></div></nav>
+<div class="wrap">
+<section class="hero">
+  <div><div class="tag">${safe(d.label)}</div>
+  <h1>${safe(d.hero)}</h1>
+  <p>${safe(d.sub)}</p>
+  <div class="heroBtns"><a class="btn" href="${showBook?'#booking':'#products'}">${safe(d.cta)}</a><a class="btn alt" href="#products">View catalogue</a></div>
+  <div class="modePill">${useUpi?'WhatsApp + Dynamic UPI QR':'WhatsApp checkout'}</div>
+  </div>
+  <div class="heroImg"><div class="heroBadge">Direct owner chat • ${useUpi?'Scan & pay':'No app needed'}</div></div>
+</section>
+<div class="stats">${d.stats.map(s=>`<div class="stat"><b>${safe(s[0])}</b><span>${safe(s[1])}</span></div>`).join('')}</div>
+<section class="section offerSec" id="offers"><div class="sectionHead"><h2>Running offers.</h2><p>Festival deals live from the shop sheet. No active row = coming soon.</p></div>
+<div id="offerBoard">${demoOffers.map(o=>`<article class="offerRect"><div><p class="offerKicker">Limited time</p><h3>${safe(o.title)}</h3><p>${safe(o.detail)}</p></div><div class="offerBadge">Grab offer</div></article>`).join('')}</div></section>
+
+<section class="section" id="services"><div class="sectionHead"><h2>What we do well.</h2><p>Clear offers. No brochure fluff.</p></div>
+<div class="g4">${d.services.map(s=>`<div class="cardx service"><div class="icon">${s[0]}</div><h3>${safe(s[1])}</h3><p>${safe(s[2])}</p></div>`).join('')}</div></section>
+
+<section class="section" id="products"><div class="sectionHead"><h2>Popular right now.</h2><p>${csv?'Live from the connected sheet.':'Demo catalogue — swap with the client sheet later.'}</p></div>
+<div class="g4" id="productGrid">${products.map(p=>`<div class="cardx"><div class="imgWrap"><img src="${p.image}" alt="${safe(p.name)}" onerror="this.parentElement.innerHTML='<div style=font-size:32px;opacity:.35>▣</div>'"></div><div class="pbody"><h3>${safe(p.name)}</h3><div class="price">${safe(p.price)}</div><button class="add" onclick="add('${p.id}')">Add to enquiry</button></div></div>`).join('')}</div></section>
+
+<section class="section"><div class="about"><div class="aboutImg"></div><div><div class="tag">Why this works</div><h2 style="letter-spacing:-1px;margin:8px 0 10px">Looks like a brand. Acts like a shop.</h2><p style="color:${pal.muted};line-height:1.75">Customers see the work, pick an item, and reach ${safe(c.owner)} on WhatsApp${useUpi?' — or pay on UPI without leaving the page':''}.</p>
+<div class="checks"><div class="check">Mobile-first layout</div><div class="check">WhatsApp order ticket</div><div class="check">${useUpi?'Dynamic UPI QR':'One-tap chat'}</div><div class="check">Sheet-ready catalogue</div></div></div></div></section>
+
+${showBook?`<section class="section" id="booking"><div class="sectionHead"><h2>Book a slot.</h2><p>Name, number, time — then it opens WhatsApp with the request written.</p></div>
+<div class="booking"><input id="name" placeholder="Your name"><input id="mobile" placeholder="Mobile"><input id="date" type="date"><select id="time"><option value="">Preferred time</option><option>9:00 AM</option><option>11:00 AM</option><option>1:00 PM</option><option>3:00 PM</option><option>5:00 PM</option><option>7:00 PM</option></select><textarea id="note" rows="3" placeholder="What do you need?" style="grid-column:1/-1"></textarea><button class="btn" onclick="book()">Send on WhatsApp</button></div></section>`:''}
+
+${useUpi?`<section class="section" id="pay"><div class="sectionHead"><h2>Pay on UPI.</h2><p>QR updates with the cart total. Payee: ${safe(c.upi)}</p></div>
+<div class="payBox"><img id="pageQr" alt="UPI QR" src=""><div><h3>Scan to pay ${safe(c.shop)}</h3><p>Add items to the cart — amount on this QR follows the total. After paying, send the UPI reference on WhatsApp so ${safe(c.owner)} can confirm.</p><p style="margin-top:10px"><b>${safe(c.upi)}</b></p></div></div></section>`:''}
+
+<section class="section"><div class="sectionHead"><h2>What customers say.</h2><p>Replace with real reviews when the client shares them.</p></div>
+<div class="g4">
+<div class="cardx test"><div class="stars">★★★★★</div><p>“Clear prices. I booked without calling twice.”</p><b>Local guest</b></div>
+<div class="cardx test"><div class="stars">★★★★★</div><p>“WhatsApp ticket had everything. Fast reply.”</p><b>Repeat customer</b></div>
+<div class="cardx test"><div class="stars">★★★★★</div><p>“Looks proper on the phone. Felt like a real shop.”</p><b>First visit</b></div>
+<div class="cardx test"><div class="stars">★★★★★</div><p>${useUpi?'“Scanned the QR, paid, sent the screenshot.”':'“Enquiry went through in one tap.”'}</p><b>Verified-style</b></div>
+</div></section>
+
+<section class="section" id="contact"><div class="contact"><div><div class="tag">Contact</div><h2 style="margin:6px 0">${safe(c.shop)}</h2><p style="color:${pal.muted};margin:0">Owner: ${safe(c.owner)}${c.gst?' • GST '+safe(c.gst):''}${useUpi?' • UPI '+safe(c.upi):''}</p></div>
+<a class="btn" href="https://wa.me/${safe(c.wa)}?text=${encodeURIComponent('Hi '+c.shop+', I found your digital shop.')}">WhatsApp ${safe(c.owner.split(' ')[0])}</a></div></section>
+</div>
+<footer class="footer"><div class="wrap"><strong>${safe(c.shop)}</strong> • ${safe(d.label)}<br>Digital shop by Izyan.</div></footer>
+
+<button class="cartFloat" onclick="openCart()">Cart <span class="cartCount" id="count">0</span></button>
+<div class="modal" id="modal"><div class="drawer">
+  <div class="drawerHead"><h2 style="margin:0">${useUpi?'Cart & Pay':'Your enquiry'}</h2><button class="close" onclick="closeCart()">✕</button></div>
+  <div id="lines"></div>
+  <div class="total"><span>Estimated</span><span id="totalLbl">₹0</span></div>
+  <div class="qrWrap ${useUpi?'show':''}" id="qrWrap"><img id="qrImg" alt="UPI QR"><small id="qrHint">Add items — QR amount updates</small></div>
+  <label style="display:block;margin-top:10px;font-size:11px;font-weight:800">Name<input id="cname" placeholder="Your name"></label>
+  <label style="display:block;margin-top:10px;font-size:11px;font-weight:800">Mobile<input id="cmobile" placeholder="Mobile"></label>
+  <label style="display:block;margin-top:10px;font-size:11px;font-weight:800">Notes<textarea id="caddr" rows="3" placeholder="${useUpi?'Address + UPI ref after payment':'Address or requirement'}"></textarea></label>
+  <button class="btn" style="width:100%;margin-top:14px" onclick="checkout()">${useUpi?'Send order + payment note':'Send on WhatsApp'}</button>
+</div></div>
+
+<script>
+var WA='${safe(c.wa)}';
+var CSV_URL='${safe(csv)}';
+var SHOP='${safe(c.shop)}';
+var UPI='${safe(c.upi||'')}';
+var USE_UPI=${useUpi?'true':'false'};
+var FALLBACK_IMG='${IMG[c.category]}';
+var CART=[];
+var DEMO=${JSON.stringify(products)};
+var OFFERS=${JSON.stringify(demoOffers)};
+function renderOffers(list){
+  var box=document.getElementById('offerBoard'); if(!box) return;
+  if(!list || !list.length){
+    box.innerHTML='<article class="offerRect soon"><div><p class="offerKicker">Stay tuned</p><h3>Our offer will be coming soon</h3><p>Festival deals, combo prices and limited drops appear here the moment the shop turns them on.</p></div><div class="offerBadge">Coming soon</div></article>';
+    return;
+  }
+  box.innerHTML=list.map(function(o){return '<article class="offerRect"><div><p class="offerKicker">Limited time</p><h3>'+o.title+'</h3><p>'+(o.detail||'')+'</p></div><div class="offerBadge">Grab offer</div></article>'}).join('');
+}
+
+function rupees(str){var m=String(str||'').replace(/,/g,'').match(/(\\d+(?:\\.\\d+)?)/);return m?Number(m[1]):0}
+function cartTotal(){return CART.reduce(function(a,x){return a+(rupees(x.price)*x.qty)},0)}
+function qrUrl(amt){
+  var pay='upi://pay?pa='+encodeURIComponent(UPI)+'&pn='+encodeURIComponent(SHOP)+'&cu=INR';
+  if(amt>0) pay+='&am='+amt.toFixed(2);
+  return 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(pay);
+}
+function refreshQr(){
+  if(!USE_UPI) return;
+  var amt=cartTotal();
+  var src=qrUrl(amt);
+  var q=document.getElementById('qrImg'); if(q) q.src=src;
+  var p=document.getElementById('pageQr'); if(p) p.src=src;
+  var h=document.getElementById('qrHint');
+  if(h) h.textContent = amt>0 ? ('Pay ₹'+amt.toLocaleString('en-IN')+' to '+UPI) : ('Scan to pay '+UPI+' — amount fills after you add items');
+}
+function add(id){var p=DEMO.find(function(x){return x.id===id});if(!p)return;var e=CART.find(function(x){return x.id===id});if(e) e.qty++; else CART.push(Object.assign({},p,{qty:1}));updateCart();openCart()}
+function updateCart(){
+  document.getElementById('count').textContent=CART.reduce(function(a,x){return a+x.qty},0);
+  document.getElementById('lines').innerHTML=CART.length?CART.map(function(x){return '<div class="cartLine"><span>'+x.name+' × '+x.qty+'</span><b>'+x.price+'</b></div>'}).join(''):'<div class="empty">Cart empty — add a product or service.</div>';
+  document.getElementById('totalLbl').textContent='₹'+cartTotal().toLocaleString('en-IN');
+  refreshQr();
+}
+function openCart(){document.getElementById('modal').classList.add('open');updateCart()}
+function closeCart(){document.getElementById('modal').classList.remove('open')}
+function book(){
+  var n=document.getElementById('name').value.trim(),m=document.getElementById('mobile').value.trim(),d=document.getElementById('date').value,t=document.getElementById('time').value,nt=document.getElementById('note').value.trim();
+  if(!n||!m||!d||!t){alert('Name, mobile, date and time chahiye.');return}
+  location.href='https://wa.me/'+WA+'?text='+encodeURIComponent('Hi '+SHOP+', booking request.\\n\\nName: '+n+'\\nMobile: '+m+'\\nDate: '+d+'\\nTime: '+t+'\\nNeed: '+(nt||'-'));
+}
+function checkout(){
+  if(!CART.length){alert('Pehle item add karo.');return}
+  var n=document.getElementById('cname').value.trim(),m=document.getElementById('cmobile').value.trim(),a=document.getElementById('caddr').value.trim();
+  if(!n||!m){alert('Name aur mobile likho.');return}
+  var items=CART.map(function(x){return x.name+' × '+x.qty+' — '+x.price}).join('\\n');
+  var msg='Hi '+SHOP+', order / enquiry.\\n\\nName: '+n+'\\nMobile: '+m+'\\nNotes: '+a+'\\n\\nItems:\\n'+items+'\\n\\nEstimated: ₹'+cartTotal();
+  if(USE_UPI) msg+='\\nUPI: '+UPI+'\\n(QR se pay karke reference yahan bhej dena)';
+  location.href='https://wa.me/'+WA+'?text='+encodeURIComponent(msg);
+}
+function parseCSV(t){var rows=[],row=[],f='',q=false;for(var i=0;i<t.length;i++){var ch=t[i],n=t[i+1];if(ch==='"'){if(q&&n==='"'){f+='"';i++}else{q=!q}}else if(ch===','&&!q){row.push(f);f=''}else if((ch==='\\n'||ch==='\\r')&&!q){if(ch==='\\r'&&n==='\\n')i++;row.push(f);f='';if(row.some(function(v){return String(v).trim()!==''}))rows.push(row);row=[]}else{f+=ch}}if(f!==''||row.length){row.push(f);if(row.some(function(v){return String(v).trim()!==''}))rows.push(row)}return rows}
+function normHeader(s){return String(s||'').trim().toLowerCase()}
+function findCol(headers,names){for(var i=0;i<names.length;i++){var idx=headers.indexOf(normHeader(names[i]));if(idx>=0)return idx}return -1}
+function loadLiveProducts(){
+  if(!CSV_URL)return;
+  fetch(CSV_URL,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text()}).then(function(text){
+    var rows=parseCSV(text);if(rows.length<2)throw new Error('Empty');
+    var headers=rows[0].map(normHeader);
+    var ti=findCol(headers,['type']),ni=findCol(headers,['product name','name']),pi=findCol(headers,['price']),ai=findCol(headers,['active']),ii=findCol(headers,['image name','image']);
+    var ot=findCol(headers,['offer title','offer name','festival offer']),od=findCol(headers,['offer detail','offer text','offer description']);
+    if(ni<0&&ot<0)throw new Error('cols');
+    var live=[], offers=[];
+    rows.slice(1).forEach(function(r,idx){
+      var active=ai<0?true:['active','true','yes','1'].indexOf(String(r[ai]||'').trim().toLowerCase())>=0;
+      var type=String(ti>=0?r[ti]:'').trim().toLowerCase();
+      var title=ot>=0?String(r[ot]||'').trim():'';
+      var detail=od>=0?String(r[od]||'').trim():'';
+      var name=ni>=0?String(r[ni]||'').trim():'';
+      if(type==='offer' || title){
+        if(active && (title || name)) offers.push({title:title||name, detail:detail||String(r[pi]||'').trim()});
+        return;
+      }
+      if(!name || !active) return;
+      var imgName=ii>=0?String(r[ii]||'').trim():'';
+      var img=imgName?(/^https?:\\/\\//i.test(imgName)?imgName:'images/'+imgName):FALLBACK_IMG;
+      live.push({name:name,price:String(pi>=0?r[pi]:'').trim(),image:img,id:'live'+idx,active:true});
+    });
+    if(live.length){
+      DEMO=live;
+      document.getElementById('productGrid').innerHTML=live.map(function(p){return '<div class="cardx"><div class="imgWrap"><img src="'+p.image+'" alt="'+p.name+'" onerror="this.parentElement.innerHTML=\\'<div style=font-size:32px;opacity:.35>▣</div>\\'"></div><div class="pbody"><h3>'+p.name+'</h3><div class="price">'+p.price+'</div><button class="add" onclick="add(\\''+p.id+'\\')">Add to enquiry</button></div></div>'}).join('');
+    }
+    renderOffers(offers);
+  }).catch(function(e){console.warn(e)});
+}
+loadLiveProducts();updateCart();refreshQr();
+<\/script></body></html>`;
+}
+
+$('#generate').onclick=()=>{
+  const c=collect();if(!c)return;Object.assign(state,c);show('step2');
+  let i=0;
+  const msgs=[['Theme lock ho raha hai...','Category palette apply.'],['Hero + catalogue...','Real website structure.'],['Checkout layer...','WhatsApp'+(state.checkout==='upi'?' + UPI QR':'')+'.'],['Preview ready.','Client demo load.']];
+  const timer=setInterval(()=>{
+    if(i<msgs.length){$('#loadTitle').textContent=msgs[i][0];$('#loadText').textContent=msgs[i][1];i++}
+    else{clearInterval(timer);$('#fakeUrl').textContent=(state.shop||'shop').replace(/[^a-z0-9]+/gi,'').toLowerCase()+'.com';$('#demoHeading').textContent=state.shop+' — live demo';$('#preview').srcdoc=buildPage(state);show('step3')}
+  },600);
+};
+$('#regen').onclick=()=>{show('step1');setTimeout(()=>{renderThemes();document.querySelectorAll('.theme')[state.theme||0]?.click()},20)};
+$('#finalize').onclick=()=>show('step4');
+$('#makeFinal').onclick=()=>{state.csv=$('#csvUrl').value.trim();state.generated=buildPage(state);$('#source').value=state.generated;show('step5')};
+$('#download').onclick=()=>{const blob=new Blob([state.generated||buildPage(state)],{type:'text/html;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(state.shop||'digital-shop').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()+'.html';document.body.appendChild(a);a.click();a.remove()};
+</script>
+</body>
+</html>
